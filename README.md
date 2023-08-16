@@ -1,2 +1,2 @@
 # ApolloGap
-This Python script utilizes the Binance API to perform triangular arbitrage in the cryptocurrency market. 
+This Python script utilizes the Binance API to perform triangular arbitrage in the cryptocurrency market. It continuously fetches currency pair prices, calculating implied rates and potential profits while considering fees, slippage, and execution delays. If profit surpasses a set threshold and slippage is acceptable, it simulates executing arbitrage trades. The bot aims to capitalize on market inefficiencies through rapid and automated trading strategies.
