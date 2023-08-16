@@ -1,0 +1,61 @@
+import ccxt
+import time
+
+# Replace with your Binance API keys
+API_KEY = 'YOUR_API_KEY'
+API_SECRET = 'YOUR_API_SECRET'
+
+# Initialize the Binance API client
+exchange = ccxt.binance({
+    'apiKey': API_KEY,
+    'secret': API_SECRET,
+    'enableRateLimit': True,
+})
+
+# Define the currency pairs for triangular arbitrage
+symbol1 = 'BTC/USDT'
+symbol2 = 'ETH/USDT'
+symbol3 = 'ETH/BTC'
+
+# Define parameters
+min_profit_percentage = 0.5
+max_slippage_percentage = 0.2
+execution_delay = 2  # seconds
+maker_fee_percentage = 0.1 / 100  # 0.1% maker fee
+
+# Main arbitrage loop
+while True:
+    try:
+        ticker1 = exchange.fetch_ticker(symbol1)
+        ticker2 = exchange.fetch_ticker(symbol2)
+        ticker3 = exchange.fetch_ticker(symbol3)
+        
+        rate1 = ticker1['ask']
+        rate2 = 1 / ticker2['ask']
+        rate3 = ticker3['bid']
+        
+        implied_rate = rate3 / (rate1 * rate2)
+        
+        arb_profit = (implied_rate - 1) * 100 - maker_fee_percentage * 3
+        
+        if arb_profit > min_profit_percentage:
+            print(f"Arbitrage opportunity found! Profit: {arb_profit:.2f}%")
+            
+            # Calculate slippage based on the current bid price
+            slippage = (ticker1['bid'] * ticker2['bid']) / implied_rate - 1
+            
+            if slippage < max_slippage_percentage:
+                print(f"Slippage within acceptable range. Executing trades...")
+                
+                # Execute arbitrage trades here
+                
+            else:
+                print("Slippage exceeds acceptable range. Skipping trade.")
+            
+        else:
+            print("No arbitrage opportunity found.")
+            
+        time.sleep(execution_delay)
+        
+    except Exception as e:
+        print(f"An error occurred: {e}")
